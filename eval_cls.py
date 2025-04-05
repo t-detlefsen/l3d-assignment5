@@ -52,12 +52,13 @@ if __name__ == '__main__':
     test_data = torch.from_numpy((np.load(args.test_data))[:,ind,:])
     test_label = torch.from_numpy(np.load(args.test_label))
 
-    # ------ TO DO: Make Prediction ------
+    # ------ Make Prediction ------
     pred_label = []
-    for data, label in tqdm(test_data, test_label):
-        pred_label.append(torch.argmax(model(data), 1))
+    test_data = test_data.to(args.device)
+    for i in tqdm(range(len(test_data))):
+        pred_label.append(torch.argmax(model(test_data[i].unsqueeze(0)), 1))
 
-    pred_label = torch.cat(pred_label)
+    pred_label = torch.cat(pred_label).cpu()
 
     # Compute Accuracy
     test_accuracy = pred_label.eq(test_label.data).cpu().sum().item() / (test_label.size()[0])

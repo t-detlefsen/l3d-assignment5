@@ -39,7 +39,7 @@ class cls_model(nn.Module):
         '''
         x = points.transpose(2,1)
         x = self.backbone(x)
-        x = F.max_pool1d(x, points.shape[1]).squeeze()
+        x = F.max_pool1d(x, points.shape[1]).squeeze(-1)
         x = self.cls(x)
 
         return x
