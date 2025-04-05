@@ -59,6 +59,8 @@ Conduct 2 experiments to analyze the robustness of your learned model. Some poss
 1. You can rotate the input point clouds by certain degrees and report how much the accuracy falls
 2. You can input a different number of points points per object (modify `--num_points` when evaluating models in `eval_cls.py` and `eval_seg.py`)
 
+WHAT ABOUT ADDING NOISE? OR WARPING TO A KNOWN DISTRIBUTION
+
 Feel free to try other ways of probing the robustness. Each experiment is worth 10 points.
 
 Deliverables: On your website, for each experiment
