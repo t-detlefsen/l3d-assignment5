@@ -5,6 +5,8 @@ import torch
 from models import cls_model
 from utils import create_dir
 
+from tqdm import tqdm
+
 def create_parser():
     """Creates a parser for command-line arguments.
     """
@@ -34,7 +36,7 @@ if __name__ == '__main__':
     create_dir(args.output_dir)
 
     # ------ TO DO: Initialize Model for Classification Task ------
-    model = 
+    model = cls_model(args.num_cls_class).to(args.device)
     
     # Load Model Checkpoint
     model_path = './checkpoints/cls/{}.pt'.format(args.load_checkpoint)
@@ -51,7 +53,11 @@ if __name__ == '__main__':
     test_label = torch.from_numpy(np.load(args.test_label))
 
     # ------ TO DO: Make Prediction ------
-    pred_label = 
+    pred_label = []
+    for data, label in tqdm(test_data, test_label):
+        pred_label.append(torch.argmax(model(data), 1))
+
+    pred_label = torch.cat(pred_label)
 
     # Compute Accuracy
     test_accuracy = pred_label.eq(test_label.data).cpu().sum().item() / (test_label.size()[0])

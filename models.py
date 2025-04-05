@@ -10,27 +10,25 @@ class cls_model(nn.Module):
             # Block 1
             nn.Conv1d(3, 64, 1),
             nn.BatchNorm1d(64),
-            F.relu(),
+            nn.ReLU(),
             # Block 2
             nn.Conv1d(64, 128, 1),
             nn.BatchNorm1d(128),
-            F.relu(),
+            nn.ReLU(),
             # Block 3
             nn.Conv1d(128, 1024, 1),
             nn.BatchNorm1d(1024),
-            F.relu(),
-            # Max Pooling
-            nn.MaxPool1d(1024)
+            nn.ReLU(),
         )
         
         self.cls = nn.Sequential(
             nn.Linear(1024, 512),
             nn.BatchNorm1d(512),
-            F.relu(),
+            nn.ReLU(),
             nn.Linear(512, 256),
             nn.BatchNorm1d(256),
-            F.relu(),
-            nn.Linear(256, 9),
+            nn.ReLU(),
+            nn.Linear(256, num_classes)
         )
 
     def forward(self, points):
@@ -39,14 +37,12 @@ class cls_model(nn.Module):
                 , where B is batch size and N is the number of points per object (N=10000 by default)
         output: tensor of size (B, num_classes)
         '''
-        import ipdb
-        ipdb.set_trace()
-        x = self.backbone(points)
+        x = points.transpose(2,1)
+        x = self.backbone(x)
+        x = F.max_pool1d(x, points.shape[1]).squeeze()
         x = self.cls(x)
 
-        return F.one_hot(x)
-
-
+        return x
 
 # ------ TO DO ------
 class seg_model(nn.Module):
@@ -61,6 +57,3 @@ class seg_model(nn.Module):
         output: tensor of size (B, N, num_seg_classes)
         '''
         pass
-
-
-
