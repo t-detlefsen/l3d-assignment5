@@ -6,6 +6,7 @@ from models import seg_model
 from data_loader import get_data_loader
 from utils import create_dir, viz_seg
 
+from tqdm import tqdm
 
 def create_parser():
     """Creates a parser for command-line arguments.
@@ -36,7 +37,7 @@ if __name__ == '__main__':
     create_dir(args.output_dir)
 
     # ------ TO DO: Initialize Model for Segmentation Task  ------
-    model = 
+    model = seg_model(args.num_seg_class)
     
     # Load Model Checkpoint
     model_path = './checkpoints/seg/{}.pt'.format(args.load_checkpoint)
@@ -53,7 +54,12 @@ if __name__ == '__main__':
     test_label = torch.from_numpy((np.load(args.test_label))[:,ind])
 
     # ------ TO DO: Make Prediction ------
-    pred_label = 
+    pred_label = []
+    test_data = test_data.to(args.device)
+    for i in tqdm(range(len(test_data))):
+        pred_label.append(torch.argmax(model(test_data[i].unsqueeze(0)), 2))
+
+    pred_label = torch.cat(pred_label).cpu()
 
     test_accuracy = pred_label.eq(test_label.data).cpu().sum().item() / (test_label.reshape((-1,1)).size()[0])
     print ("test accuracy: {}".format(test_accuracy))
