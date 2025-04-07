@@ -15,6 +15,7 @@ def create_parser():
 
     parser.add_argument('--num_seg_class', type=int, default=6, help='The number of segmentation classes')
     parser.add_argument('--num_points', type=int, default=10000, help='The number of points per object to be included in the input data')
+    parser.add_argument('--noise', type=float, default=0.0, help='The variance of the gaussian noise to be added to the input data')
 
     # Directories and checkpoint/sample iterations
     parser.add_argument('--load_checkpoint', type=str, default='model_epoch_0')
@@ -52,6 +53,8 @@ if __name__ == '__main__':
     ind = np.random.choice(10000,args.num_points, replace=False)
     test_data = torch.from_numpy((np.load(args.test_data))[:,ind,:])
     test_label = torch.from_numpy((np.load(args.test_label))[:,ind])
+
+    test_data += args.noise * torch.randn_like(test_data)
 
     # ------ TO DO: Make Prediction ------
     pred_label = []
