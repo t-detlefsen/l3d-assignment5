@@ -67,15 +67,19 @@ if __name__ == '__main__':
     test_accuracy = pred_label.eq(test_label.data).cpu().sum().item() / (test_label.size()[0])
     print ("test accuracy: {}".format(test_accuracy))
 
-    # Correct for each class
-    for i in range(args.num_cls_class):
-        ind = np.where((pred_label == test_label) * (pred_label == i))[0][0]
-        viz_seg(test_data[ind].cpu(), torch.ones(len(test_data[ind])), "{}/cls_{}_{}.gif".format(args.output_dir, pred_label[ind], int(test_label[ind])), args.device)
+    # Q3
+    viz_seg(test_data[args.i].cpu(), torch.ones(len(test_data[args.i])), "{}/cls_{}_{}.gif".format(args.output_dir, args.num_points, args.noise), args.device)
 
-    # Inorrect for each class
-    for i in range(args.num_cls_class):
-        try:
-            ind = np.where((pred_label != test_label) * (test_label == i))[0][0]
-            viz_seg(test_data[ind].cpu(), torch.ones(len(test_data[ind])), "{}/cls_{}_{}.gif".format(args.output_dir, pred_label[ind], int(test_label[ind])), args.device)
-        except:
-            continue
+    # Q1
+    # # Correct for each class
+    # for i in range(args.num_cls_class):
+    #     ind = np.where((pred_label == test_label) * (pred_label == i))[0][0]
+    #     viz_seg(test_data[ind].cpu(), torch.ones(len(test_data[ind])), "{}/cls_{}_{}.gif".format(args.output_dir, pred_label[ind], int(test_label[ind])), args.device)
+
+    # # Inorrect for each class
+    # for i in range(args.num_cls_class):
+    #     try:
+    #         ind = np.where((pred_label != test_label) * (test_label == i))[0][0]
+    #         viz_seg(test_data[ind].cpu(), torch.ones(len(test_data[ind])), "{}/cls_{}_{}.gif".format(args.output_dir, pred_label[ind], int(test_label[ind])), args.device)
+    #     except:
+    #         continue

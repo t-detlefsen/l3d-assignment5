@@ -69,16 +69,22 @@ if __name__ == '__main__':
 
     scores = pred_label.eq(test_label.data).sum(1).double()
 
-    # Get 4 best segmentations
-    for i in range(4):
-        ind = torch.argmax(scores)
-        scores[ind] = scores.mean()
-        viz_seg(test_data[ind].cpu(), test_label[ind], "{}/gt_{}.gif".format(args.output_dir, i), args.device)
-        viz_seg(test_data[ind].cpu(), pred_label[ind], "{}/pred_{}.gif".format(args.output_dir, i), args.device)
+    # Q3
+    ind = torch.where(scores == scores.median())[0][0]
+    viz_seg(test_data[args.i].cpu(), test_label[args.i], "{}/gt_{}_{}.gif".format(args.output_dir, args.num_points, args.noise), args.device)
+    viz_seg(test_data[args.i].cpu(), pred_label[args.i], "{}/pred_{}_{}.gif".format(args.output_dir, args.num_points, args.noise), args.device)
 
-    # Get 2 worst segmentations
-    for i in range(2):
-        ind = torch.argmin(scores)
-        scores[ind] = scores.mean()
-        viz_seg(test_data[ind].cpu(), test_label[ind], "{}/gt_{}.gif".format(args.output_dir, i+4), args.device)
-        viz_seg(test_data[ind].cpu(), pred_label[ind], "{}/pred_{}.gif".format(args.output_dir, i+4), args.device)
+    # Q2
+    # # Get 4 best segmentations
+    # for i in range(4):
+    #     ind = torch.argmax(scores)
+    #     scores[ind] = scores.mean()
+    #     viz_seg(test_data[ind].cpu(), test_label[ind], "{}/gt_{}.gif".format(args.output_dir, i), args.device)
+    #     viz_seg(test_data[ind].cpu(), pred_label[ind], "{}/pred_{}.gif".format(args.output_dir, i), args.device)
+
+    # # Get 2 worst segmentations
+    # for i in range(2):
+    #     ind = torch.argmin(scores)
+    #     scores[ind] = scores.mean()
+    #     viz_seg(test_data[ind].cpu(), test_label[ind], "{}/gt_{}.gif".format(args.output_dir, i+4), args.device)
+    #     viz_seg(test_data[ind].cpu(), pred_label[ind], "{}/pred_{}.gif".format(args.output_dir, i+4), args.device)
