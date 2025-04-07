@@ -37,7 +37,7 @@ if __name__ == '__main__':
     create_dir(args.output_dir)
 
     # ------ TO DO: Initialize Model for Segmentation Task  ------
-    model = seg_model(args.num_seg_class)
+    model = seg_model(args.num_seg_class).to(args.device)
     
     # Load Model Checkpoint
     model_path = './checkpoints/seg/{}.pt'.format(args.load_checkpoint)
@@ -64,6 +64,18 @@ if __name__ == '__main__':
     test_accuracy = pred_label.eq(test_label.data).cpu().sum().item() / (test_label.reshape((-1,1)).size()[0])
     print ("test accuracy: {}".format(test_accuracy))
 
-    # Visualize Segmentation Result (Pred VS Ground Truth)
-    viz_seg(test_data[args.i], test_label[args.i], "{}/gt_{}.gif".format(args.output_dir, args.exp_name), args.device)
-    viz_seg(test_data[args.i], pred_label[args.i], "{}/pred_{}.gif".format(args.output_dir, args.exp_name), args.device)
+    scores = pred_label.eq(test_label.data).sum(1).double()
+
+    # Get 4 best segmentations
+    for i in range(4):
+        ind = torch.argmax(scores)
+        scores[ind] = scores.mean()
+        viz_seg(test_data[ind].cpu(), test_label[ind], "{}/gt_{}.gif".format(args.output_dir, i), args.device)
+        viz_seg(test_data[ind].cpu(), pred_label[ind], "{}/pred_{}.gif".format(args.output_dir, i), args.device)
+
+    # Get 2 worst segmentations
+    for i in range(2):
+        ind = torch.argmin(scores)
+        scores[ind] = scores.mean()
+        viz_seg(test_data[ind].cpu(), test_label[ind], "{}/gt_{}.gif".format(args.output_dir, i+4), args.device)
+        viz_seg(test_data[ind].cpu(), pred_label[ind], "{}/pred_{}.gif".format(args.output_dir, i+4), args.device)
